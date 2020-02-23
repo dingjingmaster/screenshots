@@ -98,8 +98,8 @@
     <property name="title">
      <string>文件(&amp;F)</string>
     </property>
-    <addaction name="createShotFull"/>
     <addaction name="separator"/>
+    <addaction name="createShotFull"/>
     <addaction name="saveAction"/>
     <addaction name="separator"/>
     <addaction name="exitAction"/>
@@ -115,7 +115,13 @@
     <addaction name="delay4"/>
     <addaction name="delay5"/>
    </widget>
+   <widget class="QMenu" name="menu_E">
+    <property name="title">
+     <string>编辑(&amp;E)</string>
+    </property>
+   </widget>
    <addaction name="createShot"/>
+   <addaction name="menu_E"/>
    <addaction name="delayMenu"/>
   </widget>
   <action name="action_S">
@@ -185,7 +191,7 @@
   </action>
   <action name="createShotFull">
    <property name="text">
-    <string>新建截图(&amp;N)</string>
+    <string>全屏截图(&amp;N)</string>
    </property>
   </action>
   <action name="actionaaa">

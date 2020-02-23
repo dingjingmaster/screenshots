@@ -4,12 +4,13 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDebug>
+#include <QTimer>
 #include <QScreen>
 #include <QWindow>
-#include <QTimer>
 #include <QCoreApplication>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QTime>
 
 Screenshots::Screenshots(QWidget *parent)
     : QMainWindow(parent)
@@ -21,6 +22,8 @@ Screenshots::Screenshots(QWidget *parent)
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
 
     screenPicture = new QPixmap();
+    posX = posY = 0;
+    width = height = -1;
 
     initConfig();
 
@@ -29,7 +32,6 @@ Screenshots::Screenshots(QWidget *parent)
     connect(ui->createShotFull, &QAction::triggered, this, &Screenshots::shotScreenFull);
     connect(ui->exitAction, &QAction::triggered, this, &Screenshots::exitScreenShot);
     connect(ui->saveAction, &QAction::triggered, this, &Screenshots::saveActionSlot);
-
 }
 
 Screenshots::~Screenshots()
@@ -54,15 +56,17 @@ void Screenshots::setDelayConf(QString str)
     }
 }
 
-void Screenshots::createRect(int x, int y, int w, int h)
+void Screenshots::createRect()
 {
+    qDebug() << "create";
     QWindow window;
 
-    *screenPicture = window.screen()->grabWindow(QApplication::desktop()->winId(), x, y, w, h);
+    *screenPicture = window.screen()->grabWindow(QApplication::desktop()->winId(), posX, posY, width, height);
+    posX = posY = 0;
+    width = height = -1;
 }
 
-// bug: 窗口变大后，无法变小
-void Screenshots::resizeEvent(QResizeEvent *size)
+void Screenshots::resizeEvent(QResizeEvent*)
 {
     ui->picLabel->resize(ui->centralwidget->size());
 
@@ -81,7 +85,11 @@ void Screenshots::showPicture()
 
 void Screenshots::shotScreenFull()
 {
-    createRect(0, 0, -1, -1);
+    this->hide();
+    QTime tim = QTime::currentTime().addMSecs(1000 * this->delay);
+    while (QTime::currentTime() < tim) QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    createRect();
+    this->show();
     showPicture();
 }
 
@@ -123,6 +131,9 @@ void Screenshots::saveActionSlot()
 
     QFileDialog fd;
     QString fileName = fd.getSaveFileName(this, "打开文件", "", "(*.png)");
+
+    // bug: 需要设置默认扩展名
+
     if ("" == fileName) {
         return;
     }
@@ -131,7 +142,7 @@ void Screenshots::saveActionSlot()
         QMessageBox::warning(this, "警告", "保存文件失败");
         return;
     } else {
-        this->screenPicture->save(&file, "jpg", 100);
+        this->screenPicture->save(&file, "", 100);
         file.flush();
         file.close();
     }

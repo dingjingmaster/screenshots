@@ -24,7 +24,7 @@ public:
     Screenshots(QWidget *parent = nullptr);
     ~Screenshots();
     void setDelayConf(QString);
-    void createRect(int x, int y, int w, int h);
+    void createRect();
     void showPicture();
     void shotScreenFull();
 
@@ -44,6 +44,7 @@ protected slots:
 private:
     enum DelayConfig delay;
     QPixmap* screenPicture;
+    int posX, posY, width, height;
 
 private:
     Ui::Screenshots *ui;
