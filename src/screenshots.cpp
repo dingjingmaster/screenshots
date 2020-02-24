@@ -17,11 +17,10 @@ Screenshots::Screenshots(QWidget *parent)
     , ui(new Ui::Screenshots)
 {
     ui->setupUi(this);
-    this->setWindowIcon(QIcon(":/screenshots/img/64x64/screenshots.png"));
-    this->scroll(2,3);
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
+    setWindowIcon(QIcon(":/screenshots/img/64x64/screenshots.png"));
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
 
-    screenPicture = new QPixmap();
+    screenImage = new QPixmap();
     posX = posY = 0;
     width = height = -1;
 
@@ -29,17 +28,19 @@ Screenshots::Screenshots(QWidget *parent)
 
     connect(ui->delayMenu, &QMenu::triggered, this, &Screenshots::delaySlot);
 
-    connect(ui->createShotFull, &QAction::triggered, this, &Screenshots::shotScreenFull);
-    connect(ui->exitAction, &QAction::triggered, this, &Screenshots::exitScreenShot);
+    connect(ui->createShotFull, &QAction::triggered, this, &Screenshots::shotFull);
+    connect(ui->exitAction, &QAction::triggered, this, &Screenshots::exit);
     connect(ui->saveAction, &QAction::triggered, this, &Screenshots::saveActionSlot);
+    connect(ui->cutAction, &QAction::triggered, this, &Screenshots::cutActionSlot);
 }
 
 Screenshots::~Screenshots()
 {
+    delete this->screenImage;
     delete ui;
 }
 
-void Screenshots::setDelayConf(QString str)
+void Screenshots::setDelay(QString str)
 {
     if (str == "1 秒") {
         this->delay = SETTING_DELAY_1;
@@ -56,12 +57,12 @@ void Screenshots::setDelayConf(QString str)
     }
 }
 
-void Screenshots::createRect()
+void Screenshots::shotRect()
 {
     qDebug() << "create";
     QWindow window;
 
-    *screenPicture = window.screen()->grabWindow(QApplication::desktop()->winId(), posX, posY, width, height);
+    *screenImage = window.screen()->grabWindow(QApplication::desktop()->winId(), posX, posY, width, height);
     posX = posY = 0;
     width = height = -1;
 }
@@ -70,27 +71,27 @@ void Screenshots::resizeEvent(QResizeEvent*)
 {
     ui->picLabel->resize(ui->centralwidget->size());
 
-    showPicture();
+    this->showImage();
 }
 
-void Screenshots::showPicture()
+void Screenshots::showImage()
 {
-    if (this->screenPicture->isNull()) {
+    if (this->screenImage->isNull()) {
         return;
     }
-    ui->picLabel->setPixmap((this->screenPicture->scaled(\
+    ui->picLabel->setPixmap((this->screenImage->scaled(\
         ui->picLabel->width(), ui->picLabel->height())));
     ui->picLabel->setScaledContents(true);
 }
 
-void Screenshots::shotScreenFull()
+void Screenshots::shotFull()
 {
     this->hide();
     QTime tim = QTime::currentTime().addMSecs(1000 * this->delay);
     while (QTime::currentTime() < tim) QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-    createRect();
+    this->shotRect();
     this->show();
-    showPicture();
+    this->showImage();
 }
 
 void Screenshots::initConfig()
@@ -99,7 +100,7 @@ void Screenshots::initConfig()
     ui->delay0->setChecked(true);
 }
 
-void Screenshots::createShotSlot(QAction* action)
+void Screenshots::shotSlot(QAction* action)
 {
     qDebug() << "create shot";
 
@@ -115,17 +116,17 @@ void Screenshots::delaySlot(QAction* action)
     ui->delay5->setChecked(false);
 
     action->setChecked(true);
-    this->setDelayConf(action->text());
+    this->setDelay(action->text());
 }
 
-void Screenshots::exitScreenShot()
+void Screenshots::exit()
 {
     QCoreApplication::quit();
 }
 
 void Screenshots::saveActionSlot()
 {
-    if (this->screenPicture->isNull()) {
+    if (this->screenImage->isNull()) {
         return;
     }
 
@@ -142,10 +143,22 @@ void Screenshots::saveActionSlot()
         QMessageBox::warning(this, "警告", "保存文件失败");
         return;
     } else {
-        this->screenPicture->save(&file, "", 100);
+        this->screenImage->save(&file, "", 100);
         file.flush();
         file.close();
     }
+}
+
+void Screenshots::cutActionSlot()
+{
+    int startX, startY, endX, endY;
+    qDebug() << "cut" ;
+
+    QPixmap qp = this->screenImage->copy(0, 0, 600, 600);
+
+    this->screenImage->swap(qp);
+    this->showImage();
+
 }
 
 

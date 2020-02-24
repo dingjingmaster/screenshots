@@ -67,7 +67,7 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QLabel" name="picLabel">
+         <widget class="ImageLabel" name="picLabel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
             <horstretch>0</horstretch>
@@ -119,6 +119,7 @@
     <property name="title">
      <string>编辑(&amp;E)</string>
     </property>
+    <addaction name="cutAction"/>
    </widget>
    <addaction name="createShot"/>
    <addaction name="menu_E"/>
@@ -191,7 +192,7 @@
   </action>
   <action name="createShotFull">
    <property name="text">
-    <string>全屏截图(&amp;N)</string>
+    <string>截取全屏(&amp;N)</string>
    </property>
   </action>
   <action name="actionaaa">
@@ -209,7 +210,19 @@
     <string>退出(&amp;X)</string>
    </property>
   </action>
+  <action name="cutAction">
+   <property name="text">
+    <string>裁剪(&amp;C)</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ImageLabel</class>
+   <extends>QLabel</extends>
+   <header>imagelabel.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -23,27 +23,31 @@ class Screenshots : public QMainWindow
 public:
     Screenshots(QWidget *parent = nullptr);
     ~Screenshots();
-    void setDelayConf(QString);
-    void createRect();
-    void showPicture();
-    void shotScreenFull();
+    void setDelay(QString);
+    void shotRect();
+    void shotFull();
+    void showImage();
 
 
 protected:
     virtual void resizeEvent(QResizeEvent* size) override;
 
+
 private:
     void initConfig();
 
+
 protected slots:
-    void createShotSlot(QAction*);
+    void shotSlot(QAction*);
+
     void delaySlot(QAction*);
-    void exitScreenShot();
+    void exit();
     void saveActionSlot();
+    void cutActionSlot();
 
 private:
     enum DelayConfig delay;
-    QPixmap* screenPicture;
+    QPixmap* screenImage;
     int posX, posY, width, height;
 
 private:
