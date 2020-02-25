@@ -135,14 +135,15 @@ void ScreenWidget::saveScreen()
 
     QString fileName = QString("%1/screen_%2.png").arg(QDir::homePath()).arg(STRDATETIME);
     fullScreen->copy(x, y, w, h).save(fileName, "png");
-    close();
+    //close();
 }
 
+// 保存后应该提醒一下然后考虑退出或处于截屏状态
 void ScreenWidget::saveFullScreen()
 {
     QString fileName = QString("%1/full_%2.png").arg(QDir::homePath()).arg(STRDATETIME);
     fullScreen->save(fileName, "png");
-    close();
+    //close();
 }
 
 // bug: 不可设置后缀名
@@ -160,7 +161,7 @@ void ScreenWidget::saveScreenOther()
         int w = screen->getRightDown().x() - x;
         int h = screen->getRightDown().y() - y;
         fullScreen->copy(x, y, w, h).save(fileName, "png");
-        close();
+        //close();
     }
 }
 
@@ -175,6 +176,6 @@ void ScreenWidget::saveFullOther()
 
     if (fileName.length() > 0) {
         fullScreen->save(fileName, "png");
-        close();
+        //close();
     }
 }
